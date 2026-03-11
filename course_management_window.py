@@ -404,12 +404,10 @@ class CourseManagementWindow(QWidget):
             actions_layout.addStretch()
             self.table.setCellWidget(row_index,6,actions_widget)
 
-
         # Εφαρμογή στυλ κεφαλίδας και ρύθμιση για να πιάνουν όλο το πλάτος
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table.horizontalHeader().setStyleSheet(styles.get_table_header_style())
-
-    
+ 
     def enroll_in_course(self):
         dialog = EnrollPage(self.user_id, self)
         dialog.exec_()
