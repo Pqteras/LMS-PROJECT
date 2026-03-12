@@ -464,3 +464,35 @@ def subjects_available_back_btn_style():
                     padding-top: 2px; /* Εφέ πίεσης */
                 }
             """
+
+def lecture_btn_style():
+    return """
+    QPushButton {
+        border: none;
+        background-color: transparent;
+        color: #555555; /* Γκρι για ηρεμία */
+        padding: 5px;
+        font-size: 16px;
+    }
+    QPushButton:hover {
+        color: #2c3e50; /* Το χρώμα της μπάρας σου */
+        background-color: #f0f2f5; /* Ελαφρύ γκρι φόντο στο hover */
+        border-radius: 4px;
+    }
+          """
+
+def unenroll_btn_style():
+    return  """
+    QPushButton {
+        border: none;
+        background-color: transparent;
+        color: #555555;
+        padding: 5px;
+        font-size: 16px;
+    }
+    QPushButton:hover {
+        color: #e74c3c; /* Μαλακό κόκκινο */
+        background-color: #fdeaea; /* Πολύ απαλό κόκκινο φόντο */
+        border-radius: 4px;
+    }
+           """

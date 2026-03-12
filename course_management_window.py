@@ -8,12 +8,12 @@ from student_functions.student_quiz_selection_dialog import StudentQuizSelection
 from student_functions.student_quiz_stats_page import StudentQuizStatsPage
 from quiz_functions.quiz_selectiondialog import AdminQuizCourseSelectionDialog
 from subjects_interface.subjects_available_interface import EnrollPage
+import qtawesome as qta
 
 class TableWithBackground(QTableWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.bg_pixmap = QPixmap('icons/background_subjects_interface.jpg')            
-        self.horizontalHeader().setStretchLastSection(True)#Εμφανίζουμε τους τίτλους των στηλών(ID,Περιγραφή,κλπ.)
         self.verticalHeader().setVisible(False) # Κρύβουμε τους αριθμούς αριστερά
 
     def resizeEvent(self, event):#Όταν αλλάζει το μέγεθος του πίνακα, ανανεώνουμε την κλίμακα της εικόνας background για να καλύπτει όλο το πίνακα 
@@ -276,7 +276,15 @@ class CourseManagementWindow(QWidget):
         self.table = TableWithBackground()
         self.table.setColumnCount(7)
         self.table.setHorizontalHeaderLabels(["Όνομα", "Περιγραφή", "Κατηγορία", "Εκπαιδευτής", "Έναρξη", "Λήξη", "Ενέργειες"])
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch) #Οι στήλες του πίνακα θα προσαρμόζονται αυτόματα στο διαθέσιμο πλάτος του πίνακα, ώστε να καλύπτουν όλο το πλάτος χωρίς να αφήνουν κενά ή να δημιουργούν οριζόντιο scrollbar
+        
+        #Ορίζω τη στήλη 6("Ενέργειες") ως Fixed και δίνω το πλάτος της,120,για να την μικρήνω και να την κάνω να χωράει τα κουμπιά, Διαλέξεις και απεγγραφή
+        self.table.horizontalHeader().setSectionResizeMode(6, QHeaderView.Fixed)
+        self.table.setColumnWidth(6, 120)
+        
+        #Όλες οι στήλες εκτός της τελευταίας κάνουν stretch
+        for i in range(6):
+            self.table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
+
         self.table.cellClicked.connect(self.on_table_item_clicked)#Όταν ο χρήστης κάνει κλικ σε ένα κελί του πίνακα, καλείται η μέθοδος on_table_item_clicked που θα χειρίζεται την εμφάνιση των πληροφοριών του μαθήματος στα πεδία κειμένου για τον Admin ή θα ανοίγει τις διαλέξεις για τον Student
         layout.addWidget(self.table)
 
@@ -377,35 +385,45 @@ class CourseManagementWindow(QWidget):
                 item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable) #κάνει τα κελιά "μόνο για ανάγνωση" μέσα στον πίνακα,ο χρήστης μπορεί μόνο να τα επιλέξει αλλά όχι να γράψει μέσα τους
                 self.table.setItem(row_index, col_idx, item)
 
+
+            #Δημιουργία των Icons,χρησιμοποιούμε color_active για το εφέ όταν το κουμπί είναι πατημένο/ενεργό
+            view_icon = qta.icon('fa5s.folder-open', color="#C6AE39", color_active="#ffee32")
+            unenroll_icon = qta.icon('fa5s.times-circle', color="#954545", color_active='#e74c3c')
+
             # Container για δύο κουμπιά
             actions_widget = QWidget()
             actions_layout = QHBoxLayout(actions_widget)
-            actions_layout.setContentsMargins(35, 0, 35, 0) #setContentsMargins(left, top, right, bottom)
-            actions_layout.setSpacing(120) #Απόσταση μεταξύ των κουμπιών
+            actions_layout.setContentsMargins(2, 0, 2, 0) #setContentsMargins(left, top, right, bottom)
+            actions_layout.setSpacing(15) #Απόσταση μεταξύ των κουμπιών
+            actions_layout.setAlignment(Qt.AlignCenter)
 
             #Κουμπί Διαλέξεων
-            lecture_btn = QPushButton("📂")
+            lecture_btn = QPushButton("")
+            lecture_btn.setIcon(view_icon)
             lecture_btn.setToolTip("Διαλέξεις")
             lecture_btn.setFixedSize(32,32)
+            lecture_btn.setStyleSheet(styles.lecture_btn_style())
+            lecture_btn.setCursor(Qt.PointingHandCursor)
             lecture_btn.clicked.connect(lambda _, course_id = course[0]: self.open_lectures(course_id))
 
             #Κουμπί Απεγγραφής (μόνο για students)
             if not self.admin:
-                unenroll_btn = QPushButton("✖️")
+                unenroll_btn = QPushButton("")
+                unenroll_btn.setIcon(unenroll_icon)
                 unenroll_btn.setToolTip("Απεγγραφή")
                 unenroll_btn.setFixedSize(32,32)
-                unenroll_btn.setStyleSheet("background: #e74c3c; color: white; border: none; border-radius: 3px;")
+                unenroll_btn.setStyleSheet(styles.unenroll_btn_style())
+                unenroll_btn.setCursor(Qt.PointingHandCursor)
                 unenroll_btn.clicked.connect(lambda _, course_id=course[0]: self.unenroll_from_course(course_id))
                 actions_layout.addWidget(lecture_btn)
                 actions_layout.addWidget(unenroll_btn)
             else:
                 actions_layout.addWidget(lecture_btn)
 
-            actions_layout.addStretch()
+  
             self.table.setCellWidget(row_index,6,actions_widget)
 
-        # Εφαρμογή στυλ κεφαλίδας και ρύθμιση για να πιάνουν όλο το πλάτος
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        # Δεν αλλάζουμε τις resize modes εδώ γιατί είναι ήδη ορισμένες στη create_course_list_page
         self.table.horizontalHeader().setStyleSheet(styles.get_table_header_style())
  
     def enroll_in_course(self):
