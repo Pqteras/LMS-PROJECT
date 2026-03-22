@@ -1,4 +1,7 @@
 __pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
 example.py
 lms.db
 /Εκφώνηση Ασκησης.txt
