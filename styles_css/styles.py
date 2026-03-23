@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QGraphicsDropShadowEffect
 from PyQt5.QtGui import QColor
 
+
 def get_main_window_style():
     """Επιστρέφει το γενικό στυλ για τα παράθυρα της εφαρμογής."""
     return """
@@ -28,6 +29,7 @@ def get_main_window_style():
         }
     """
 
+
 def get_table_header_style():
     return """
         /* Αυτό βάφει όλη τη γραμμή του header μέχρι το τέρμα δεξιά */
@@ -43,6 +45,7 @@ def get_table_header_style():
             font-weight: bold;
         }
     """
+
 
 def get_table_widget_style():
     """Στυλ πίνακα που δένει με το μπεζ θέμα."""
@@ -91,6 +94,7 @@ def get_table_wrapper_style():
         border-radius: 10px;
     """
 
+
 def get_right_panel_container_style():
     """Στυλ για το δεξί panel διαχείρισης."""
     return """
@@ -99,6 +103,7 @@ def get_right_panel_container_style():
         padding: 18px;
         border: 1px solid #bbb;
     """
+
 
 def subjects_list_style():
     """Στυλ για τον τίτλο Λίστα Μαθημάτων"""
@@ -110,7 +115,8 @@ def subjects_list_style():
         font-family: 'Segoe UI', sans-serif;
         """
 
-def apply_shadow(widget,blur=8,x=2,y=2,alpha=50):
+
+def apply_shadow(widget, blur=8, x=2, y=2, alpha=50):
     """Εφαρμόζει σκιά σε ένα widget"""
     shadow = QGraphicsDropShadowEffect()
     shadow.setBlurRadius(blur)
@@ -119,8 +125,9 @@ def apply_shadow(widget,blur=8,x=2,y=2,alpha=50):
     shadow.setColor(QColor(255, 255, 255, alpha))
     widget.setGraphicsEffect(shadow)
 
+
 def title_frame_style():
-    return"""
+    return """
     #TitleFrame {
         background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #e3f2fd, stop:1 white);
         border-left: 5px solid #0d47a1;
@@ -129,7 +136,10 @@ def title_frame_style():
                 }
         """
 
+
 # Αριστερή πλευρά - branding panel
+
+
 def main_window_left_side():
     return """
             QFrame {
@@ -143,6 +153,8 @@ def main_window_left_side():
                 
             }
         """
+
+
 def main_window_left_side_rounded_label():
     return """
                     QLabel {
@@ -150,6 +162,7 @@ def main_window_left_side_rounded_label():
                         border-bottom-left-radius: 30px;
                     }
                 """
+
 
 def main_window_right_side_login():
     return """
@@ -159,6 +172,8 @@ def main_window_right_side_login():
                 border-radius: 12px;
             }
         """
+
+
 def main_window_exit_button():
     return """
             QPushButton {
@@ -172,6 +187,7 @@ def main_window_exit_button():
                 color: red;
             }
         """
+
 
 def input_style_login_window():
     return """
@@ -194,7 +210,8 @@ def input_style_login_window():
 
            """
 
-def input_style_register_window(): 
+
+def input_style_register_window():
     return """
         QLineEdit, QComboBox {
             padding-left: 7px;
@@ -213,6 +230,8 @@ def input_style_register_window():
             background-color: white;
         }
     """
+
+
 def input_style_role_combo_register():
     return """
         QComboBox{
@@ -241,6 +260,7 @@ def input_style_role_combo_register():
         }
            """
 
+
 def back_btn_style():
     return """
             QPushButton {
@@ -255,6 +275,7 @@ def back_btn_style():
             text-decoration: none;
                                }
             """
+
 
 def login_register_window():
     return """
@@ -277,6 +298,7 @@ def login_register_window():
                                }
            """
 
+
 def login_register_user_title_style():
     return """
     QLabel {
@@ -293,6 +315,7 @@ def login_register_user_title_style():
     }
 
 """
+
 
 def register_button_white():
     return """
@@ -352,6 +375,7 @@ def sidebar_style():
         }
     """
 
+
 def students_stats_rounded_container():
     return """   
             QFrame {
@@ -359,6 +383,7 @@ def students_stats_rounded_container():
                 border-radius: 20px;               
             }       
     """
+
 
 def students_stats_rounded_sub_list():
     return """
@@ -392,6 +417,7 @@ def students_stats_rounded_sub_list():
             }
         """
 
+
 def available_courses_list_style():
     return """          
     QListWidget {
@@ -417,6 +443,7 @@ def available_courses_list_style():
     }
         """
 
+
 def subjects_available_course_list_style():
     """
     QListWidget {
@@ -426,7 +453,7 @@ def subjects_available_course_list_style():
         outline: none; /* Βγάζει τις τελείες/κύκλους εστίασης */
         padding: 5px;
     }
-    
+
     QListWidget::item {
         background-color: transparent;
         border-bottom: 1px solid #f1f2f6;
@@ -442,12 +469,13 @@ def subjects_available_course_list_style():
 
     /* Απενεργοποίηση του κλασικού μπλε/γκρι selection */
     QListWidget::item:selected {
-        background-color: #f1f2f6; 
+        background-color: #f1f2f6;
         color: #2f3640;
         border: none;
         outline: none;
     }
-"""
+    """
+
 
 def subjects_available_back_btn_style():
     return """
@@ -465,6 +493,7 @@ def subjects_available_back_btn_style():
                 }
             """
 
+
 def lecture_btn_style():
     return """
     QPushButton {
@@ -481,8 +510,9 @@ def lecture_btn_style():
     }
           """
 
+
 def unenroll_btn_style():
-    return  """
+    return """
     QPushButton {
         border: none;
         background-color: transparent;

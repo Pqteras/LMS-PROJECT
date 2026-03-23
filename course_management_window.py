@@ -4,12 +4,41 @@ import subprocess
 
 import fitz
 from styles_css import styles
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QFrame, QLineEdit, QPushButton, QTableWidget, QTableWidgetItem, QMessageBox,
-                             QFileDialog, QLabel, QDialog, QMessageBox, QFileDialog, QLabel, QDialog, QHeaderView, QStackedWidget, QListWidget, QTextEdit)
+from PyQt5.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QFrame,
+    QLineEdit,
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QMessageBox,
+    QFileDialog,
+    QLabel,
+    QDialog,
+    QMessageBox,
+    QFileDialog,
+    QLabel,
+    QDialog,
+    QHeaderView,
+    QStackedWidget,
+    QListWidget,
+    QTextEdit,
+    QScrollArea,
+    QApplication,
+)
 from PyQt5.QtCore import Qt, QSize, QPropertyAnimation, QEvent
-from PyQt5.QtGui import QPixmap, QPainter, QIcon, QCursor
-from db import (get_enrolled_courses, add_question_to_quiz, create_course,
-                update_course, get_all_courses, delete_course, unenroll_user_from_course)
+from PyQt5.QtGui import QPixmap, QPainter, QIcon, QCursor, QImage
+from db import (
+    get_enrolled_courses,
+    add_question_to_quiz,
+    create_course,
+    update_course,
+    get_all_courses,
+    delete_course,
+    unenroll_user_from_course,
+)
 from student_functions.student_quiz_selection_dialog import StudentQuizSelectionDialog
 from student_functions.student_quiz_stats_page import StudentQuizStatsPage
 from quiz_functions.quiz_selectiondialog import AdminQuizCourseSelectionDialog
@@ -20,7 +49,7 @@ import qtawesome as qta
 class TableWithBackground(QTableWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.bg_pixmap = QPixmap('icons/background_subjects_interface.jpg')
+        self.bg_pixmap = QPixmap("icons/background_subjects_interface.jpg")
         self.verticalHeader().setVisible(False)  # Κρύβουμε τους αριθμούς αριστερά
 
     # Όταν αλλάζει το μέγεθος του πίνακα, ανανεώνουμε την κλίμακα της εικόνας background για να καλύπτει όλο το πίνακα
@@ -30,13 +59,16 @@ class TableWithBackground(QTableWidget):
             w = self.viewport().width()
             h = self.viewport().height()
             self.scaled_pixmap = self.bg_pixmap.scaled(
-                w, h, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+                w, h, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation
+            )
         self.viewport().update()
 
-    def paintEvent(self, event):  # Τοποθετώ την εικόνα background πίσω από τα δεδομένα του πίνακα
+    def paintEvent(
+        self, event
+    ):  # Τοποθετώ την εικόνα background πίσω από τα δεδομένα του πίνακα
         painter = QPainter(self.viewport())
         # Ελέγχει αν υπάρχει η εικόνα και αν έχει ήδη κλιμακωθεί σωστά στο μέγεθος του παραθύρου
-        if hasattr(self, 'scaled_pixmap') and self.scaled_pixmap:
+        if hasattr(self, "scaled_pixmap") and self.scaled_pixmap:
             # ΚΕΝΤΡΑΡΙΣΜΑ ΕΙΚΟΝΑΣ
             x = (self.viewport().width() - self.scaled_pixmap.width()) // 2
             # ΚΕΝΤΡΑΡΙΣΜΑ ΕΙΚΟΝΑΣ
@@ -52,6 +84,7 @@ class CourseManagementWindow(QWidget):
         self.admin = admin
         self.setWindowTitle("Διαχείριση Μαθημάτων")
         self.setGeometry(100, 100, 1100, 650)
+        self.setWindowState(Qt.WindowMaximized)
         self.setStyleSheet(styles.get_main_window_style())
 
         self.init_ui()
@@ -72,7 +105,8 @@ class CourseManagementWindow(QWidget):
         self.top_bar.setMouseTracking(True)
         self.top_bar.setFixedHeight(50)
         self.top_bar.setStyleSheet(
-            "background-color: #34405e; border-bottom: 1px solid #2c3e50;")
+            "background-color: #34405e; border-bottom: 1px solid #2c3e50;"
+        )
         top_bar_layout = QHBoxLayout(self.top_bar)
         top_bar_layout.setContentsMargins(10, 0, 10, 0)
 
@@ -103,7 +137,8 @@ class CourseManagementWindow(QWidget):
         self.sidebar_header = QFrame()
         self.sidebar_header.setFixedHeight(70)
         self.sidebar_header.setStyleSheet(
-            "background-color: #1a252f; border-bottom: 1px solid #34495e;")
+            "background-color: #1a252f; border-bottom: 1px solid #34495e;"
+        )
 
         # Χρησιμοποιούμε κάθετο layout για να μπει ο τίτλος ΚΑΤΩ από το κουμπί
         header_layout = QVBoxLayout(self.sidebar_header)
@@ -116,7 +151,8 @@ class CourseManagementWindow(QWidget):
         self.sidebar_title_label = QLabel("MENU")
         self.sidebar_title_label.setAlignment(Qt.AlignCenter)
         self.sidebar_title_label.setStyleSheet(
-            "color: white; font-size: 18px; font-weight: bold;")
+            "color: white; font-size: 18px; font-weight: bold;"
+        )
 
         header_layout.addLayout(btn_container)
         header_layout.addWidget(self.sidebar_title_label)
@@ -198,14 +234,19 @@ class CourseManagementWindow(QWidget):
                 # Μετατρέπουμε τη θέση του κλικ σε global και μετά σε τοπική,ως προς το CourseManagementWindow (self)
                 click_pos = self.mapFromGlobal(QCursor.pos())
 
-                if click_pos.x() > self.sidebar_container.width():  # Αν το κλικ έγινε δεξιά από το όριο του sidebar
+                if (
+                    click_pos.x() > self.sidebar_container.width()
+                ):  # Αν το κλικ έγινε δεξιά από το όριο του sidebar
                     self.toggle_sidebar()
                     return False  # Επιστρέφουμε False για να εκτελεστεί κανονικά το κλικ στο κουμπί ή στο input που πατήθηκε
 
         return super().eventFilter(obj, event)
 
     def toggle_sidebar(self):
-        if hasattr(self, 'animation') and self.animation.state() == QPropertyAnimation.Running:
+        if (
+            hasattr(self, "animation")
+            and self.animation.state() == QPropertyAnimation.Running
+        ):
             return  # Αν ήδη τρέχει το animation τότε προχώρα
 
         current_width = self.sidebar_container.width()
@@ -221,8 +262,7 @@ class CourseManagementWindow(QWidget):
             self.sidebar_header.hide()
             self.sidebar_body.hide()
 
-        self.animation = QPropertyAnimation(
-            self.sidebar_container, b"minimumWidth")
+        self.animation = QPropertyAnimation(self.sidebar_container, b"minimumWidth")
         self.animation.setDuration(200)
         self.animation.setStartValue(current_width)
         self.animation.setEndValue(end_width)
@@ -233,7 +273,8 @@ class CourseManagementWindow(QWidget):
             self.sidebar_body.show()
             self.sidebar_title_label.show()
             self.sidebar_header.setStyleSheet(
-                "background-color: #1a252f; border-bottom: 1px solid #34495e;")
+                "background-color: #1a252f; border-bottom: 1px solid #34495e;"
+            )
 
     def setup_sidebar_buttons_to_layout(self, sidebar_body_layout):
         """Βοηθητική συνάρτηση για να τοποθετήσουμε τα κουμπιά στο νέο layout"""
@@ -242,8 +283,7 @@ class CourseManagementWindow(QWidget):
         self.btn_courses.setIconSize(QSize(15, 15))
         self.btn_courses.setFixedSize(40, 40)
         self.btn_courses.setFixedWidth(250)
-        self.btn_courses.clicked.connect(
-            lambda: self.content_stack.setCurrentIndex(0))
+        self.btn_courses.clicked.connect(lambda: self.content_stack.setCurrentIndex(0))
         sidebar_body_layout.addWidget(self.btn_courses)
 
         if self.admin:
@@ -253,7 +293,8 @@ class CourseManagementWindow(QWidget):
             self.btn_admin.setFixedSize(40, 40)
             self.btn_admin.setFixedWidth(250)
             self.btn_admin.clicked.connect(
-                lambda: self.content_stack.setCurrentIndex(1))
+                lambda: self.content_stack.setCurrentIndex(1)
+            )
             self.sidebar_body_layout.addWidget(self.btn_admin)
         else:
             self.btn_enroll = QPushButton(" Εγγραφή")
@@ -262,7 +303,8 @@ class CourseManagementWindow(QWidget):
             self.btn_enroll.setFixedSize(40, 40)
             self.btn_enroll.setFixedWidth(250)
             self.btn_enroll.clicked.connect(
-                lambda: self.content_stack.setCurrentIndex(2))
+                lambda: self.content_stack.setCurrentIndex(2)
+            )
             self.sidebar_body_layout.addWidget(self.btn_enroll)
 
         self.btn_stats = QPushButton(" Στατιστικά")
@@ -270,8 +312,7 @@ class CourseManagementWindow(QWidget):
         self.btn_stats.setIconSize(QSize(15, 15))
         self.btn_stats.setFixedSize(40, 40)
         self.btn_stats.setFixedWidth(250)
-        self.btn_stats.clicked.connect(
-            lambda: self.content_stack.setCurrentIndex(3))
+        self.btn_stats.clicked.connect(lambda: self.content_stack.setCurrentIndex(3))
         self.sidebar_body_layout.addWidget(self.btn_stats)
 
         # Αυτό το stretch σπρώχνει ό,τι ακολουθεί στο κάτω μέρος του sidebar
@@ -301,15 +342,26 @@ class CourseManagementWindow(QWidget):
         layout = QVBoxLayout(page)
 
         title = QLabel(
-            "Τα μαθήματά μου" if not self.admin else "Πίνακας Ελέγχου Μαθημάτων")
+            "Τα μαθήματά μου" if not self.admin else "Πίνακας Ελέγχου Μαθημάτων"
+        )
         title.setStyleSheet(
-            "font-size: 24px; font-weight: bold; margin: 10px; color: #2c3e50;")
+            "font-size: 24px; font-weight: bold; margin: 10px; color: #2c3e50;"
+        )
         layout.addWidget(title)
 
         self.table = TableWithBackground()
         self.table.setColumnCount(7)
         self.table.setHorizontalHeaderLabels(
-            ["Όνομα", "Περιγραφή", "Κατηγορία", "Εκπαιδευτής", "Έναρξη", "Λήξη", "Ενέργειες"])
+            [
+                "Όνομα",
+                "Περιγραφή",
+                "Κατηγορία",
+                "Εκπαιδευτής",
+                "Έναρξη",
+                "Λήξη",
+                "Ενέργειες",
+            ]
+        )
 
         # Ορίζω τη στήλη 6("Ενέργειες") ως Fixed και δίνω το πλάτος της,120,για να την μικρήνω και να την κάνω να χωράει τα κουμπιά, Διαλέξεις και απεγγραφή
         self.table.horizontalHeader().setSectionResizeMode(6, QHeaderView.Fixed)
@@ -333,14 +385,14 @@ class CourseManagementWindow(QWidget):
         layout = QVBoxLayout(page)
 
         title = QLabel("Επεξεργασία Μαθημάτων & Διαχείριση Quiz")
-        title.setStyleSheet(
-            "font-size: 20px; font-weight: bold; margin: 10px;")
+        title.setStyleSheet("font-size: 20px; font-weight: bold; margin: 10px;")
         layout.addWidget(title)
 
         # Φτιάχνω ένα container-πλαίσιο για να βάλω τα πεδία κειμένου("όνομα,περιγραφή κλπ.")
         form_container = QFrame()
         form_container.setStyleSheet(
-            "background: white; border-radius: 10px; padding: 20px;")
+            "background: white; border-radius: 10px; padding: 20px;"
+        )
         # Τοποθετώ τα πεδία κειμένου μέσα στο form_container για να έχουν λευκό φόντο και να ξεχωρίζουν από το υπόλοιπο περιεχόμενο της σελίδας
         form_layout = QVBoxLayout(form_container)
 
@@ -358,7 +410,14 @@ class CourseManagementWindow(QWidget):
         self.end_date_input = QLineEdit()
         self.end_date_input.setPlaceholderText("Λήξη (DD/MM/YYYY)")
 
-        for inputs in [self.name_input, self.description_input, self.category_input, self.instructor_input, self.start_date_input, self.end_date_input]:
+        for inputs in [
+            self.name_input,
+            self.description_input,
+            self.category_input,
+            self.instructor_input,
+            self.start_date_input,
+            self.end_date_input,
+        ]:
             form_layout.addWidget(inputs)
 
         # Buttons Λειτουργιών
@@ -405,8 +464,7 @@ class CourseManagementWindow(QWidget):
                 pass  # "Αν δεν έχουμε τίποτα να αποσυνδέσουμε, εντάξει, απλά προχωράμε"
 
             # lambda = "Όταν σε πατήσουν, κάλεσε τη συνάρτηση update_course για το συγκεκριμένο ID μαθήματος που μόλις κάναμε κλικ στον πίνακα"
-            self.add_course_btn.clicked.connect(
-                lambda: self.update_course(course_id))
+            self.add_course_btn.clicked.connect(lambda: self.update_course(course_id))
 
     def update_course_list(self):
         if self.admin:
@@ -419,8 +477,14 @@ class CourseManagementWindow(QWidget):
 
         for row_index, course in enumerate(courses):
             # Παραλείπουμε το course[5] που είναι το instructor_id και δεν θέλουμε να εμφανίζεται στον πίνακα,ετσι εχω φτιάξει την δομή του πίνακα courses στο db.py
-            data_to_show = [course[1], course[2],
-                            course[3], course[4], course[6], course[7]]
+            data_to_show = [
+                course[1],
+                course[2],
+                course[3],
+                course[4],
+                course[6],
+                course[7],
+            ]
             # Τα courses[],είναι οι στήλες ID,Όνομα,Πειγραφή κλπ.
             for col_idx, data in enumerate(data_to_show):
                 # Το διπλό for-loop rows,,cols μετατρέπει κάθε πληροφορία σε QTableWidgetItem
@@ -435,10 +499,12 @@ class CourseManagementWindow(QWidget):
                 self.table.setItem(row_index, col_idx, item)
 
             # Δημιουργία των Icons,χρησιμοποιούμε color_active για το εφέ όταν το κουμπί είναι πατημένο/ενεργό
-            view_icon = qta.icon('fa5s.folder-open',
-                                 color="#C6AE39", color_active="#ffee32")
+            view_icon = qta.icon(
+                "fa5s.folder-open", color="#C6AE39", color_active="#ffee32"
+            )
             unenroll_icon = qta.icon(
-                'fa5s.times-circle', color="#954545", color_active='#e74c3c')
+                "fa5s.times-circle", color="#954545", color_active="#e74c3c"
+            )
 
             # Container για δύο κουμπιά
             actions_widget = QWidget()
@@ -456,7 +522,8 @@ class CourseManagementWindow(QWidget):
             lecture_btn.setStyleSheet(styles.lecture_btn_style())
             lecture_btn.setCursor(Qt.PointingHandCursor)
             lecture_btn.clicked.connect(
-                lambda _, course_id=course[0]: self.open_lectures(course_id))
+                lambda _, course_id=course[0]: self.open_lectures(course_id)
+            )
 
             # Κουμπί Απεγγραφής (μόνο για students)
             if not self.admin:
@@ -467,7 +534,8 @@ class CourseManagementWindow(QWidget):
                 unenroll_btn.setStyleSheet(styles.unenroll_btn_style())
                 unenroll_btn.setCursor(Qt.PointingHandCursor)
                 unenroll_btn.clicked.connect(
-                    lambda _, course_id=course[0]: self.unenroll_from_course(course_id))
+                    lambda _, course_id=course[0]: self.unenroll_from_course(course_id)
+                )
                 actions_layout.addWidget(lecture_btn)
                 actions_layout.addWidget(unenroll_btn)
             else:
@@ -488,17 +556,21 @@ class CourseManagementWindow(QWidget):
 
         if success:
             self.update_course_list()  # Ανανέωση enrolled courses
-            if hasattr(self, 'enroll_page'):  # Αν υπάρχει η σελίδα εγγραφής, ανανεώνουμε και εκείνη
+            if hasattr(
+                self, "enroll_page"
+            ):  # Αν υπάρχει η σελίδα εγγραφής, ανανεώνουμε και εκείνη
                 self.enroll_page.load_courses()
 
-# -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------------------------------------------------------------------------------------
     def open_quiz_stats_dialog(self):
         from admin_functions.admin_quiz_stats_dialog import AdminTotalQuizStatsDialog
+
         dialog = AdminTotalQuizStatsDialog(self)
         dialog.exec_()
 
     def open_student_stats(self):
         from student_functions.student_quiz_stats_page import StudentQuizStatsDialog
+
         dialog = StudentQuizStatsDialog(self.user_id, self)
         dialog.exec_()
 
@@ -511,20 +583,21 @@ class CourseManagementWindow(QWidget):
         end_date = self.end_date_input.text().strip()
 
         if not all([name, description, category, instructor, start_date, end_date]):
-            QMessageBox.warning(self, "Προειδοποίηση",
-                                "Παρακαλώ συμπληρώστε όλα τα πεδία.")
+            QMessageBox.warning(
+                self, "Προειδοποίηση", "Παρακαλώ συμπληρώστε όλα τα πεδία."
+            )
             return
 
-        create_course(name, description, category,
-                      instructor, start_date, end_date)
+        create_course(name, description, category, instructor, start_date, end_date)
         self.update_course_list()
         self.clear_inputs()
 
     def delete_course(self):
         row = self.table.currentRow()
         if row < 0:
-            QMessageBox.warning(self, "Προειδοποίηση",
-                                "Παρακαλώ επιλέξτε ένα μάθημα για διαγραφή.")
+            QMessageBox.warning(
+                self, "Προειδοποίηση", "Παρακαλώ επιλέξτε ένα μάθημα για διαγραφή."
+            )
             return
 
         # Παίρνουμε το αντικείμενο της πρώτης στήλης
@@ -532,9 +605,14 @@ class CourseManagementWindow(QWidget):
         # Ανακτούμε το κρυφό ID που αποθηκεύσαμε με το UserRole
         course_id = item.data(Qt.UserRole)
 
-        reply = QMessageBox.question(self, 'Επιβεβαίωση', f'Είστε βέβαιοι ότι θέλετε να διαγράψετε το μάθημα με ID {course_id};',
-                                     # Την δεύτερη φορά που βάζουμε την επιλογή No(QMessageBox.No) την εχουμε ουσιαστικά προεπιλέξει και με ενα enter επιλεγουμε το Οχι
-                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        reply = QMessageBox.question(
+            self,
+            "Επιβεβαίωση",
+            f"Είστε βέβαιοι ότι θέλετε να διαγράψετε το μάθημα με ID {course_id};",
+            # Την δεύτερη φορά που βάζουμε την επιλογή No(QMessageBox.No) την εχουμε ουσιαστικά προεπιλέξει και με ενα enter επιλεγουμε το Οχι
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
 
         if reply == QMessageBox.Yes:
             delete_course(course_id)
@@ -550,12 +628,14 @@ class CourseManagementWindow(QWidget):
         end_date = self.end_date_input.text().strip()
 
         if not all([name, description, category, instructor, start_date, end_date]):
-            QMessageBox.warning(self, "Προειδοποίηση",
-                                "Παρακαλώ συμπληρώστε όλα τα πεδία.")
+            QMessageBox.warning(
+                self, "Προειδοποίηση", "Παρακαλώ συμπληρώστε όλα τα πεδία."
+            )
             return
 
-        update_course(course_id, name, description, category,
-                      instructor, start_date, end_date)
+        update_course(
+            course_id, name, description, category, instructor, start_date, end_date
+        )
         # Ανανεωνει τον πίνακα με τα μαθήματα για να εμφανιστούν οι αλλαγές που κάναμε
         self.update_course_list()
         self.clear_inputs()  # Καθαρίζει τα πεδία κειμένου μετά την ενημέρωση του μαθήματος για να μην μπερδεύει τον Admin αν θέλει να προσθέσει νέο μάθημα ή να ενημερώσει κάποιο άλλο
@@ -565,13 +645,19 @@ class CourseManagementWindow(QWidget):
         self.add_course_btn.clicked.connect(self.add_course)
 
     def clear_inputs(self):
-        for field in [self.name_input, self.description_input, self.category_input, self.instructor_input, self.start_date_input, self.end_date_input]:
+        for field in [
+            self.name_input,
+            self.description_input,
+            self.category_input,
+            self.instructor_input,
+            self.start_date_input,
+            self.end_date_input,
+        ]:
             field.clear()
 
     def open_lectures(self, course_id):
         # Δημιουργούμε την σελίδα δυναμικά
-        lectures_page = LecturesPage(
-            course_id, admin=self.admin, parent_window=self)
+        lectures_page = LecturesPage(course_id, admin=self.admin, parent_window=self)
         self.content_stack.addWidget(lectures_page)
         self.content_stack.setCurrentWidget(lectures_page)
 
@@ -582,9 +668,13 @@ class CourseManagementWindow(QWidget):
     def open_create_quiz_course_selection(self):
         # Ανοίγει ένα παράθυρο για να διαλέξει ο Admin σε ποιο μάθημα θέλει να προσθέσει Quiz
         dialog = AdminQuizCourseSelectionDialog(self)
-        if dialog.exec_() == QDialog.Accepted:  # Αν ο χρήστης πάτησε "ΟΚ" ή "Επιλογή" και δεν έκλεισε απλά το παράθυρο
+        if (
+            dialog.exec_() == QDialog.Accepted
+        ):  # Αν ο χρήστης πάτησε "ΟΚ" ή "Επιλογή" και δεν έκλεισε απλά το παράθυρο
             selected_course_id = dialog.get_selected_course_id()
-            if selected_course_id:  # Αν το μαθημα που επελεξε υπάρχει,τότε ανοίγει το παράθυρο δημιουργίας Quiz για αυτό το μάθημα
+            if (
+                selected_course_id
+            ):  # Αν το μαθημα που επελεξε υπάρχει,τότε ανοίγει το παράθυρο δημιουργίας Quiz για αυτό το μάθημα
                 self.open_create_quiz_dialog(selected_course_id)
 
     def open_create_quiz_dialog(self, course_id):
@@ -597,18 +687,19 @@ class CourseManagementWindow(QWidget):
         # γ)Όταν καλείς το dialog.exec_() ο χρήστης δεν μπορεί να κλικάρει πίσω στον πίνακα των μαθημάτων όσο το QuizDialog είναι ανοιχτό
         if dialog.exec_() == QDialog.Accepted:
             new_quiz_id = dialog.created_quiz_id
-            question_dialog = AddMultipleQuestionsDialog(
-                new_quiz_id, parent=self)
+            question_dialog = AddMultipleQuestionsDialog(new_quiz_id, parent=self)
             question_dialog.exec_()
         self.update_course_list()
 
     def go_back(self):
         from main_window import MainWindow
+
         # Αν η τιμη role είναι admin, τότε το ρόλο που θα περάσουμε στο MainWindow θα είναι "admin", διαφορετικά θα είναι "student"
         role = "admin" if self.admin else "student"
         self.close()
         self.main_window = MainWindow(role)
-        self.main_window.show()
+        self.main_window.showMaximized()
+
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # --- Παράθυρο Διαλέξεων ---
@@ -620,8 +711,7 @@ class LecturesPage(QWidget):
         self.course_id = course_id
         self.admin = admin
         self.parent_window = parent_window
-        self.lectures_folder = os.path.join(
-            "lectures", f"course_{self.course_id}")
+        self.lectures_folder = os.path.join("lectures", f"course_{self.course_id}")
 
         # Κύριο layout
         main_layout = QVBoxLayout(self)
@@ -630,8 +720,7 @@ class LecturesPage(QWidget):
 
         # Τίτλος
         title = QLabel(f"Διαλέξεις Μαθήματος")
-        title.setStyleSheet(
-            "font-size: 25px; font-weight: bold; color: #2c3e50;")
+        title.setStyleSheet("font-size: 25px; font-weight: bold; color: #2c3e50;")
         main_layout.addWidget(title)
 
         # Stacked widget για να εναλλάσσουμε μεταξύ λίστας και viewer
@@ -640,8 +729,7 @@ class LecturesPage(QWidget):
         # --- ΣΕΛΙΔΑ 0: Λίστα Διαλέξεων ---
         lectures_container = QFrame()
         # βάζω το ίδιο στυλ με στρογγυλεμένο container από τα στατιστικά βαθμών μαθητών
-        lectures_container.setStyleSheet(
-            styles.students_stats_rounded_container())
+        lectures_container.setStyleSheet(styles.students_stats_rounded_container())
         container_layout = QVBoxLayout(lectures_container)
         container_layout.setContentsMargins(15, 15, 15, 15)
 
@@ -654,8 +742,7 @@ class LecturesPage(QWidget):
 
         # --- ΣΕΛΙΔΑ 1: Viewer Διάλεξης ---
         viewer_container = QFrame()
-        viewer_container.setStyleSheet(
-            styles.students_stats_rounded_container())
+        viewer_container.setStyleSheet(styles.students_stats_rounded_container())
         viewer_layout = QVBoxLayout(viewer_container)
         viewer_layout.setContentsMargins(15, 15, 15, 15)
 
@@ -668,14 +755,31 @@ class LecturesPage(QWidget):
         # Label για τον τίτλο της διάλεξης
         self.lecture_title = QLabel()
         self.lecture_title.setStyleSheet(
-            "font-size: 17px; font-weight: bold; color: #2c3e50;")
+            "font-size: 17px; font-weight: bold; color: #2c3e50;"
+        )
         viewer_layout.addWidget(self.lecture_title)
         viewer_layout.setSpacing(10)
 
-        # Text area για εμφάνιση του περιεχομένου της διάλεξης
+        # Εναλλαγή μεταξύ απλού κειμένου και PDF (κύλιση μίας στήλης)
+        self.lecture_viewer_stack = QStackedWidget()
+
         self.lecture_content = QTextEdit()
         self.lecture_content.setReadOnly(True)
-        viewer_layout.addWidget(self.lecture_content)
+        self.lecture_viewer_stack.addWidget(self.lecture_content)
+
+        self.pdf_scroll = QScrollArea()
+        self.pdf_scroll.setWidgetResizable(True)
+        self.pdf_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.pdf_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.pdf_scroll.setFrameShape(QFrame.NoFrame)
+        self.pdf_document_widget = QWidget()
+        self.pdf_pages_layout = QVBoxLayout(self.pdf_document_widget)
+        self.pdf_pages_layout.setContentsMargins(8, 8, 8, 8)
+        self.pdf_pages_layout.setSpacing(4)
+        self.pdf_scroll.setWidget(self.pdf_document_widget)
+        self.lecture_viewer_stack.addWidget(self.pdf_scroll)
+
+        viewer_layout.addWidget(self.lecture_viewer_stack)
 
         self.stack.addWidget(viewer_container)  # Index 1
 
@@ -701,6 +805,61 @@ class LecturesPage(QWidget):
         else:
             self.lectures_list.addItem("Δεν υπάρχουν διαλέξεις")
 
+    def _clear_pdf_pages(self):
+        """Αφαιρεί τις ετικέτες σελίδων PDF από το layout ώστε να μην διαρρέουν widgets."""
+        while self.pdf_pages_layout.count():
+            item = self.pdf_pages_layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
+
+    def _pixmap_to_qimage(self, pix):
+        """Μετατρέπει PyMuPDF Pixmap σε QImage (αντίγραφο στη μνήμη, χωρίς αρχεία)."""
+        if pix.alpha:
+            fmt = QImage.Format_RGBA8888
+        else:
+            fmt = QImage.Format_RGB888
+        return QImage(
+            pix.samples,
+            pix.width,
+            pix.height,
+            pix.stride,
+            fmt,
+        ).copy()
+
+    def _show_pdf_in_scroll_area(self, file_path):
+        """Εμφανίζει όλες τις σελίδες σε ένα κάθετα κυλιόμενο παράθυρο."""
+        self._clear_pdf_pages()
+        doc = fitz.open(file_path)
+        try:
+            if len(doc) == 0:
+                return
+
+            viewport_w = self.pdf_scroll.viewport().width()
+            margin = 24
+            target_w = (viewport_w - margin) if viewport_w > 50 else 0
+
+            for page_num in range(len(doc)):
+                page = doc[page_num]
+                if target_w > 0:
+                    zoom = target_w / page.rect.width
+                    mat = fitz.Matrix(zoom, zoom)
+                else:
+                    mat = fitz.Matrix(1.5, 1.5)
+
+                pix = page.get_pixmap(matrix=mat, alpha=False)
+                qimg = self._pixmap_to_qimage(pix)
+                pm = QPixmap.fromImage(qimg)
+                page_label = QLabel()
+                page_label.setPixmap(pm)
+                page_label.setAlignment(Qt.AlignCenter)
+                self.pdf_pages_layout.addWidget(page_label)
+        finally:
+            doc.close()
+
+        self.pdf_scroll.verticalScrollBar().setValue(0)
+        self.lecture_viewer_stack.setCurrentIndex(1)
+
     def on_lecture_clicked(self, item):
         """Ανοίγει τη διάλεξη που επιλέχθηκε"""
         lecture_file = item.text()
@@ -716,37 +875,12 @@ class LecturesPage(QWidget):
         ext = os.path.splitext(lecture_file)[1].lower()
 
         if ext == ".pdf":
-
-            # Ανοίγουμε το PDF
-            pdf = fitz.open(file_path)
-
-            if len(pdf) > 0:
-                # Δημιουργούμε HTML με όλες τις σελίδες
-                html_content = """<html><body style='background-color: #f0f0f0; margin: 0px; padding: 0px;'>"""
-
-                for page_num in range(len(pdf)):
-                    page = pdf[page_num]
-
-                    # Μετατρέπουμε τη σελίδα σε εικόνα, Ουσιαστικά μετατρέπουμε το PDF σε εικόνες με PyMuPDF
-                    pix = page.get_pixmap(
-                        matrix=fitz.Matrix(1.5, 1.5))  # 1.5x zoom
-
-                    # Αποθηκεύουμε προσωρινά
-                    temp_path = f"temp_page_{page_num + 1}.png"
-                    pix.save(temp_path)
-
-                    # Προσθέτουμε στο HTML
-                    # Styling για PDF pages - πλήρες πλάτος
-                    html_content += f"""
-                    <h3 style='text-align: center; color: white; background-color: #34405e; margin: 0px; padding: 15px; font-size: 12px;'>Σελίδα {page_num + 1}</h3>
-                    <div style='text-align: center; background-color: #f8f9fa; padding: 15px; margin: 0px;'>
-                        <img src='{temp_path}' style='max-width: 100%; height: auto; border: 1px solid #ddd;'/>
-                    </div>
-                    """
-
-                html_content += "</body></html>"
-                self.lecture_content.setHtml(html_content)
-                pdf.close()
+            # Φόρτωση viewer πρώτα ώστε το viewport του scroll να έχει πραγματικό πλάτος
+            self.stack.setCurrentIndex(1)
+            QApplication.processEvents()
+            self._show_pdf_in_scroll_area(file_path)
+        else:
+            self.lecture_viewer_stack.setCurrentIndex(0)
 
         # Εναλλαγή σε viewer
         self.stack.setCurrentIndex(1)
@@ -757,18 +891,20 @@ class LecturesPage(QWidget):
         if file_path:
             os.makedirs(self.lectures_folder, exist_ok=True)
             target_path = os.path.join(
-                self.lectures_folder, os.path.basename(file_path))
+                self.lectures_folder, os.path.basename(file_path)
+            )
             try:
                 import shutil
+
                 shutil.copy(file_path, target_path)
-                QMessageBox.information(
-                    self, "Επιτυχία", "Η διάλεξη προστέθηκε.")
+                QMessageBox.information(self, "Επιτυχία", "Η διάλεξη προστέθηκε.")
                 self.load_lectures()
             except Exception as e:
                 QMessageBox.warning(self, "Σφάλμα", f"Αποτυχία: {e}")
 
 
 # -----------------------------------------------------------------------------------------------------------------------------
+
 
 # --- Διάλογοι Quiz & Εγγραφής ---
 class QuizDialog(QDialog):
@@ -777,6 +913,7 @@ class QuizDialog(QDialog):
         self.course_id = course_id
         self.setWindowTitle("Δημιουργία Quiz")
         self.setGeometry(100, 100, 400, 300)
+        self.setWindowState(Qt.WindowMaximized)
         self.layout = QVBoxLayout()
 
         self.title_input = QLineEdit()
@@ -802,7 +939,9 @@ class QuizDialog(QDialog):
             conn = sqlite3.connect("lms.db")
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO quizzes (course_id, title, description) VALUES (?, ?, ?)", (self.course_id, title, desc))
+                "INSERT INTO quizzes (course_id, title, description) VALUES (?, ?, ?)",
+                (self.course_id, title, desc),
+            )
             conn.commit()
             self.created_quiz_id = cursor.lastrowid
             conn.close()
@@ -821,10 +960,12 @@ class AddMultipleQuestionsDialog(QDialog):
 
         self.setWindowTitle("Προσθήκη Ερωτήσεων")
         self.setGeometry(100, 100, 400, 450)
+        self.setWindowState(Qt.WindowMaximized)
         self.layout = QVBoxLayout()
 
         self.title = QLabel(
-            f"Ερώτηση {self.current_question} από {self.total_questions}")
+            f"Ερώτηση {self.current_question} από {self.total_questions}"
+        )
         self.layout.addWidget(self.title)
 
         self.question_input = QLineEdit()
@@ -842,7 +983,13 @@ class AddMultipleQuestionsDialog(QDialog):
         self.correct_option = QLineEdit()
         self.correct_option.setPlaceholderText("Σωστή (A, B, C, D)")
 
-        for w in [self.option_a, self.option_b, self.option_c, self.option_d, self.correct_option]:
+        for w in [
+            self.option_a,
+            self.option_b,
+            self.option_c,
+            self.option_d,
+            self.correct_option,
+        ]:
             # Δημιουργεί μια προσωρινή ομάδα που περιέχει τα κουμπιά ή τα πεδία κειμένου των επιλογών (A, B, C, D) και της σωστής απάντησης
             self.layout.addWidget(w)
 
@@ -854,11 +1001,15 @@ class AddMultipleQuestionsDialog(QDialog):
     # ΕΛΕΓΧΟΣ ΟΤΙ ΟΙ ΕΠΙΛΟΓΕΣ ΕΧΟΥΝ ΣΥΜΠΛΗΡΩΘΕΙ ΚΑΙ ΟΤΙ Η ΣΩΣΤΗ ΑΠΑΝΤΗΣΗ ΕΙΝΑΙ ΜΙΑ ΑΠΟ ΤΙΣ 4 ΕΠΙΛΟΓΕΣ, ΠΡΙΝ ΠΡΟΣΠΑΘΗΣΕΙ ΝΑ ΤΗΝ ΠΡΟΣΘΕΣΕΙ ΣΤΗ ΒΑΣΗ ΔΕΔΟΜΕΝΩΝ. ΑΝ Ο ΕΛΕΓΧΟΣ ΑΠΟΤΥΧΕΙ, ΕΜΦΑΝΙΖΕΤΑΙ ΕΝΑ ΜΗΝΥΜΑ ΠΡΟΕΙΔΟΠΟΙΗΣΗΣ ΚΑΙ Η ΕΡΩΤΗΣΗ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ.
     def submit_question(self):
         q = self.question_input.text().strip()
-        ans = [self.option_a.text(), self.option_b.text(),
-               self.option_c.text(), self.option_d.text()]
+        ans = [
+            self.option_a.text(),
+            self.option_b.text(),
+            self.option_c.text(),
+            self.option_d.text(),
+        ]
         correct = self.correct_option.text().strip().upper()
 
-        if not q or not all(ans) or correct not in ['A', 'B', 'C', 'D']:
+        if not q or not all(ans) or correct not in ["A", "B", "C", "D"]:
             QMessageBox.warning(self, "Σφάλμα", "Συμπληρώστε σωστά τα πεδία.")
             return
 
@@ -868,10 +1019,17 @@ class AddMultipleQuestionsDialog(QDialog):
             if self.current_question < self.total_questions:
                 self.current_question += 1
                 self.title.setText(
-                    f"Ερώτηση {self.current_question} από {self.total_questions}")
-                for w in [self.question_input, self.option_a, self.option_b, self.option_c, self.option_d, self.correct_option]:
+                    f"Ερώτηση {self.current_question} από {self.total_questions}"
+                )
+                for w in [
+                    self.question_input,
+                    self.option_a,
+                    self.option_b,
+                    self.option_c,
+                    self.option_d,
+                    self.correct_option,
+                ]:
                     w.clear()  # Θεωρητικά w= ενα widget από τα πεδία ερωτήσεων και επιλογών, οπότε με το w.clear() καθαρίζουμε όλα τα πεδία για να γράψουμε την επόμενη ερώτηση
             else:
-                QMessageBox.information(
-                    self, "Τέλος", "Όλες οι ερωτήσεις προστέθηκαν.")
+                QMessageBox.information(self, "Τέλος", "Όλες οι ερωτήσεις προστέθηκαν.")
                 self.accept()

@@ -1,13 +1,23 @@
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QListWidget, QPushButton,
-    QHBoxLayout, QMessageBox,QDialog
+    QWidget,
+    QVBoxLayout,
+    QListWidget,
+    QPushButton,
+    QHBoxLayout,
+    QMessageBox,
+    QDialog,
 )
+from PyQt5.QtCore import Qt
 from db import get_all_courses
 
 import sqlite3
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QListWidget, QPushButton, QMessageBox,
-    QHBoxLayout
+    QWidget,
+    QVBoxLayout,
+    QListWidget,
+    QPushButton,
+    QMessageBox,
+    QHBoxLayout,
 )
 
 
@@ -28,6 +38,7 @@ class AdminQuizCourseSelectionDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Επιλογή Μαθήματος για Δημιουργία Quiz")
         self.setGeometry(200, 200, 400, 300)
+        self.setWindowState(Qt.WindowMaximized)
 
         self.selected_course_id = None
         self.layout = QVBoxLayout()

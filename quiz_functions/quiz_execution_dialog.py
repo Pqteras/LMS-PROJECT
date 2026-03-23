@@ -1,10 +1,17 @@
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QRadioButton,
-    QPushButton, QMessageBox, QButtonGroup
+    QDialog,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QRadioButton,
+    QPushButton,
+    QMessageBox,
+    QButtonGroup,
 )
 from PyQt5.QtCore import Qt
 from db import save_quiz_result
 import sqlite3
+
 
 class QuizExecutionDialog(QDialog):
     def __init__(self, student_id, quiz_id, parent=None):
@@ -14,13 +21,16 @@ class QuizExecutionDialog(QDialog):
 
         self.setWindowTitle("Εκτέλεση Quiz")
         self.setGeometry(100, 100, 600, 400)
+        self.setWindowState(Qt.WindowMaximized)
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
         self.questions = self.load_questions()
         if not self.questions:
-            QMessageBox.warning(self, "Σφάλμα", "Δεν βρέθηκαν ερωτήσεις για αυτό το quiz.")
+            QMessageBox.warning(
+                self, "Σφάλμα", "Δεν βρέθηκαν ερωτήσεις για αυτό το quiz."
+            )
             self.reject()
             return
 
@@ -69,18 +79,23 @@ class QuizExecutionDialog(QDialog):
     def load_questions(self):
         conn = sqlite3.connect("lms.db")
         cursor = conn.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT question_text, option_a, option_b, option_c, option_d, correct_option
             FROM questions
             WHERE quiz_id = ?
-        """, (self.quiz_id,))
+        """,
+            (self.quiz_id,),
+        )
         results = cursor.fetchall()
         conn.close()
         return results
 
     def show_question(self):
         q = self.questions[self.current_index]
-        self.title.setText(f"Ερώτηση {self.current_index + 1} από {len(self.questions)}")
+        self.title.setText(
+            f"Ερώτηση {self.current_index + 1} από {len(self.questions)}"
+        )
         self.question_label.setText(q[0])
         self.option_a.setText(f"A. {q[1]}")
         self.option_b.setText(f"B. {q[2]}")
@@ -132,7 +147,7 @@ class QuizExecutionDialog(QDialog):
         QMessageBox.information(
             self,
             "Απάντηση Υποβλήθηκε",
-            f"✅ Υποβάλατε την απάντηση: {self.user_answers[self.current_index]}"
+            f"✅ Υποβάλατε την απάντηση: {self.user_answers[self.current_index]}",
         )
 
     def next_question(self):

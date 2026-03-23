@@ -1,4 +1,12 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QPushButton, QMessageBox,QDialog
+from PyQt5.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QListWidget,
+    QPushButton,
+    QMessageBox,
+    QDialog,
+)
 from db import get_quizzes_by_course, delete_quiz_by_id
 
 
@@ -47,6 +55,7 @@ class AdminQuizManagementWidget(QWidget):
 
     def create_quiz(self):
         from course_management_window import ActualQuizCreationDialog
+
         dialog = ActualQuizCreationDialog(course_id=self.course_id, parent=self)
         if dialog.exec_():
             self.load_quizzes()
@@ -54,11 +63,14 @@ class AdminQuizManagementWidget(QWidget):
     def add_question(self):
         selected = self.quiz_list.currentItem()
         if not selected or selected.text() == "Δεν υπάρχουν quiz για διαχείριση.":
-            QMessageBox.warning(self, "Προειδοποίηση", "Επίλεξε quiz για προσθήκη ερώτησης.")
+            QMessageBox.warning(
+                self, "Προειδοποίηση", "Επίλεξε quiz για προσθήκη ερώτησης."
+            )
             return
         quiz_id = int(selected.text().split(" - ")[0])
 
         from course_management_window import AddMultipleQuestionsDialog
+
         dialog = AddMultipleQuestionsDialog(quiz_id, parent=self)
         dialog.exec_()
         self.load_quizzes()
@@ -76,13 +88,15 @@ class AdminQuizManagementWidget(QWidget):
             self,
             "Επιβεβαίωση Διαγραφής",
             f"Είστε σίγουρος ότι θέλετε να διαγράψετε το quiz: '{quiz_title}';",
-            QMessageBox.Yes | QMessageBox.No
+            QMessageBox.Yes | QMessageBox.No,
         )
 
         if confirm == QMessageBox.Yes:
             try:
                 delete_quiz_by_id(quiz_id)
-                QMessageBox.information(self, "Επιτυχία", "Το quiz διαγράφηκε επιτυχώς.")
+                QMessageBox.information(
+                    self, "Επιτυχία", "Το quiz διαγράφηκε επιτυχώς."
+                )
                 self.load_quizzes()
             except Exception as e:
                 QMessageBox.critical(self, "Σφάλμα", f"Σφάλμα κατά τη διαγραφή: {e}")

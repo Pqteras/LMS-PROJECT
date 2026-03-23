@@ -1,8 +1,21 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QAction, QHBoxLayout
+from PyQt5.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QAction,
+    QHBoxLayout,
+)
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont, QIcon
 from register_window import RegisterWindow, toggle_password_visibility
-from styles_css.styles import input_style_login_window, login_register_window, login_register_user_title_style, register_button_white
+from styles_css.styles import (
+    input_style_login_window,
+    login_register_window,
+    login_register_user_title_style,
+    register_button_white,
+)
 
 
 class LoginWindow(QWidget):
@@ -17,10 +30,14 @@ class LoginWindow(QWidget):
 
     # Η clear_login_frame κάνει reset του layout login_layout
     def clear_login_frame(self):
-        while self.login_layout.count():  # Εκτελεί τον κώδικα όσο υπάρχουν items μέσα στο layout,θα καθαρίσει όλα τα στοιχεία στο layout ένα-ένα
+        while (
+            self.login_layout.count()
+        ):  # Εκτελεί τον κώδικα όσο υπάρχουν items μέσα στο layout,θα καθαρίσει όλα τα στοιχεία στο layout ένα-ένα
             # takeAt(0) παίρνει το πρώτο item (στην θέση 0) από το layout και το αφαιρεί από το layout,αλλά δεν το διαγράφει από την μνήμη.
             child = self.login_layout.takeAt(0)
-            if child.widget():  # Ελέγχει αν το child είναι πραγματικό widget (κάποιο κουμπί, γραμμή κειμένου, label κλπ)
+            if (
+                child.widget()
+            ):  # Ελέγχει αν το child είναι πραγματικό widget (κάποιο κουμπί, γραμμή κειμένου, label κλπ)
                 # Αυτό προγραμματίζει το widget να διαγραφεί από τη μνήμη μόλις τελειώσει η τρέχουσα εκτέλεση των events
                 child.widget().deleteLater()
                 # Είναι ένας ασφαλής τρόπος να διαγράψεις ένα widget χωρίς να σπάσει η ροή του προγράμματος.
@@ -44,7 +61,8 @@ class LoginWindow(QWidget):
         title.setAlignment(Qt.AlignCenter)
 
         subtitle = QLabel(
-            "Απαιτείται <span style='color:red;'>εγγραφή</span> πριν την πρώτη είσοδο.")
+            "Απαιτείται <span style='color:red;'>εγγραφή</span> πριν την πρώτη είσοδο."
+        )
         subtitle.setWordWrap(True)
         subtitle.setStyleSheet(login_register_user_title_style())
         subtitle.setFont(QFont("Arial", 10))
@@ -66,25 +84,19 @@ class LoginWindow(QWidget):
         self.password_input.setText(prefill_password)
 
         self.password_visible = False
-        self.eye_action = QAction(
-            QIcon("icons/eye_close.png"), "", self.password_input)
-        self.password_input.addAction(
-            self.eye_action, QLineEdit.TrailingPosition)
+        self.eye_action = QAction(QIcon("icons/eye_close.png"), "", self.password_input)
+        self.password_input.addAction(self.eye_action, QLineEdit.TrailingPosition)
         self.eye_action.setToolTip("Εμφάνιση/Απόκρυψη συνθηματικού")
-        self.eye_action.triggered.connect(
-            lambda: toggle_password_visibility(self))
+        self.eye_action.triggered.connect(lambda: toggle_password_visibility(self))
 
         login_btn = QPushButton("Είσοδος ")
         login_btn.setStyleSheet(login_register_window())
         login_btn.setCursor(Qt.PointingHandCursor)
-        login_btn.clicked.connect(
-            lambda: self.parent_window.authenticate_user())
+        login_btn.clicked.connect(lambda: self.parent_window.authenticate_user())
 
         # Enter: από email → εστίαση στο password αν είναι κενό, αλλιώς σύνδεση· από password → σύνδεση
-        self.email_input.returnPressed.connect(
-            self.handle_email_return_pressed)
-        self.password_input.returnPressed.connect(
-            self.handle_password_return_pressed)
+        self.email_input.returnPressed.connect(self.handle_email_return_pressed)
+        self.password_input.returnPressed.connect(self.handle_password_return_pressed)
 
         # Προσθήκη εικονιδίου στο κουμπί εισόδου
         login_icon = QIcon("icons/login-icon.png")
@@ -97,12 +109,14 @@ class LoginWindow(QWidget):
         # Μήνυμα σφάλματος σύνδεσης, αρχικά κρυφό
         self.login_error = QLabel("")
         self.login_error.setStyleSheet(
-            "color: #E74C3C; font-size: 16px; margin-left: 5px; background: none; border: none;")
+            "color: #E74C3C; font-size: 16px; margin-left: 5px; background: none; border: none;"
+        )
         self.login_error.hide()
 
         self.login_successful = QLabel("")
         self.login_successful.setStyleSheet(
-            "color: #27AE60; font-size: 16px; margin-left: 5px; background: none; border: none;")
+            "color: #27AE60; font-size: 16px; margin-left: 5px; background: none; border: none;"
+        )
         self.login_successful.hide()
 
         # Δημιουργούμε ένα QWidget που θα κρατάει το layout της εγγραφής
@@ -115,7 +129,8 @@ class LoginWindow(QWidget):
         # Τα Widgets που θα προσθέσουμε στο register_layout
         no_account_label = QLabel("Δεν έχετε λογαριασμό;")
         no_account_label.setStyleSheet(
-            "color: #D1D1D1; font-size: 15px; border: none; background: transparent;")
+            "color: #D1D1D1; font-size: 15px; border: none; background: transparent;"
+        )
 
         self.register_btn = QPushButton("Εγγραφή")
         self.register_btn.setCursor(Qt.PointingHandCursor)
@@ -146,7 +161,9 @@ class LoginWindow(QWidget):
 
         self.login_layout.addWidget(register_container)
 
-    def open_register(self):  # μετάβαση στο παράθυρο εγγραφής,μόλις καλέσω την συνάρτηση open_register με το κουμπί Εγγραφή,θα ανοίξει το παράθυρο εγγραφής και θα κλείσει το παράθυρο σύνδεσης
+    def open_register(
+        self,
+    ):  # μετάβαση στο παράθυρο εγγραφής,μόλις καλέσω την συνάρτηση open_register με το κουμπί Εγγραφή,θα ανοίξει το παράθυρο εγγραφής και θα κλείσει το παράθυρο σύνδεσης
         if self.register_helper is None:
             self.register_helper = RegisterWindow(self)
 

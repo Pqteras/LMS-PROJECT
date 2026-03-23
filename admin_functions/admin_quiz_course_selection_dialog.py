@@ -1,7 +1,12 @@
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QListWidget,
-    QPushButton, QHBoxLayout, QMessageBox
+    QDialog,
+    QVBoxLayout,
+    QListWidget,
+    QPushButton,
+    QHBoxLayout,
+    QMessageBox,
 )
+from PyQt5.QtCore import Qt
 from db import get_all_courses
 
 
@@ -10,6 +15,7 @@ class AdminQuizCourseSelectionDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Επιλογή Μαθήματος για Δημιουργία Quiz")
         self.setGeometry(200, 200, 400, 300)
+        self.setWindowState(Qt.WindowMaximized)
 
         self.selected_course_id = None
 
@@ -39,7 +45,9 @@ class AdminQuizCourseSelectionDialog(QDialog):
             for course in courses:
                 self.course_list.addItem(f"{course[0]} - {course[1]}")
         except Exception as e:
-            QMessageBox.critical(self, "Σφάλμα", f"Σφάλμα κατά τη φόρτωση μαθημάτων: {e}")
+            QMessageBox.critical(
+                self, "Σφάλμα", f"Σφάλμα κατά τη φόρτωση μαθημάτων: {e}"
+            )
 
     def select_course(self):
         selected_item = self.course_list.currentItem()
@@ -48,7 +56,9 @@ class AdminQuizCourseSelectionDialog(QDialog):
                 self.selected_course_id = int(selected_item.text().split(" - ")[0])
                 self.accept()
             except ValueError:
-                QMessageBox.warning(self, "Σφάλμα", "Δεν αναγνωρίστηκε το ID του μαθήματος.")
+                QMessageBox.warning(
+                    self, "Σφάλμα", "Δεν αναγνωρίστηκε το ID του μαθήματος."
+                )
         else:
             QMessageBox.warning(self, "Προειδοποίηση", "Παρακαλώ επίλεξε ένα μάθημα.")
 

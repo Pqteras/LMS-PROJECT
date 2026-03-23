@@ -1,6 +1,12 @@
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QListWidget, QPushButton, QMessageBox
+    QDialog,
+    QVBoxLayout,
+    QLabel,
+    QListWidget,
+    QPushButton,
+    QMessageBox,
 )
+from PyQt5.QtCore import Qt
 from db import get_enrolled_courses, get_quizzes_by_course
 from quiz_functions.quiz_execution_dialog import QuizExecutionDialog
 
@@ -11,6 +17,7 @@ class StudentQuizSelectionDialog(QDialog):
         self.student_id = student_id
         self.setWindowTitle("Επιλογή Μαθήματος και Quiz")
         self.setGeometry(300, 200, 500, 400)
+        self.setWindowState(Qt.WindowMaximized)
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -53,4 +60,4 @@ class StudentQuizSelectionDialog(QDialog):
 
         # Άνοιγμα παραθύρου Quiz
         widget = QuizExecutionDialog(student_id=self.student_id, quiz_id=quiz_id)
-        widget.exec_()  
+        widget.exec_()

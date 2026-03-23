@@ -1,8 +1,13 @@
 import sqlite3
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QPushButton,
-    QMessageBox, QButtonGroup
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QPushButton,
+    QMessageBox,
+    QButtonGroup,
 )
+
 
 class TakeQuizWidget(QWidget):
     def __init__(self, quiz_id, student_id=None, parent=None):
@@ -49,21 +54,26 @@ class TakeQuizWidget(QWidget):
         self.update_ui()
 
     def load_all_questions(self):
-        conn = sqlite3.connect('lms.db')
+        conn = sqlite3.connect("lms.db")
         cursor = conn.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT question_id, question_text, option_a, option_b, option_c, option_d, correct_option
             FROM questions
             WHERE quiz_id = ?
             ORDER BY question_id
             LIMIT 5
-        """, (self.quiz_id,))
+        """,
+            (self.quiz_id,),
+        )
         self.questions = cursor.fetchall()
         conn.close()
 
     def update_ui(self):
         if not self.questions:
-            QMessageBox.information(self, "Ολοκλήρωση", "Δεν υπάρχουν ερωτήσεις για αυτό το quiz.")
+            QMessageBox.information(
+                self, "Ολοκλήρωση", "Δεν υπάρχουν ερωτήσεις για αυτό το quiz."
+            )
             self.setDisabled(True)
             return
 
@@ -105,7 +115,9 @@ class TakeQuizWidget(QWidget):
         if selected_letter == correct_option:
             QMessageBox.information(self, "Σωστό", "Σωστή απάντηση!")
         else:
-            QMessageBox.information(self, "Λάθος", f"Λάθος. Η σωστή απάντηση είναι: {correct_option}")
+            QMessageBox.information(
+                self, "Λάθος", f"Λάθος. Η σωστή απάντηση είναι: {correct_option}"
+            )
 
     def next_question(self):
         if self.current_index < len(self.questions) - 1:
@@ -124,5 +136,7 @@ class TakeQuizWidget(QWidget):
             if user_ans == correct_ans:
                 score += 1
 
-        QMessageBox.information(self, "Τελική Υποβολή", f"Η βαθμολογία σου: {score} / {len(self.questions)}")
-        self.setDisabled(True)  
+        QMessageBox.information(
+            self, "Τελική Υποβολή", f"Η βαθμολογία σου: {score} / {len(self.questions)}"
+        )
+        self.setDisabled(True)

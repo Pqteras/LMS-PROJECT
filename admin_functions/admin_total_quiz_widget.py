@@ -3,6 +3,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from db import get_all_courses, get_quizzes_by_course, get_statistics_for_quiz
 
+
 class AdminTotalQuizStatsWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -35,21 +36,25 @@ class AdminTotalQuizStatsWidget(QWidget):
         averages = []
 
         for quiz in quizzes:
-            stats = get_statistics_for_quiz(quiz['quiz_id'])
+            stats = get_statistics_for_quiz(quiz["quiz_id"])
             if stats["count"] > 0:
-                labels.append(quiz['title'])
-                averages.append(stats['average'])
+                labels.append(quiz["title"])
+                averages.append(stats["average"])
 
         self.ax.clear()
         if not labels:
-            QMessageBox.information(self, "Χωρίς δεδομένα", "Δεν υπάρχουν βαθμολογίες για τα quiz αυτού του μαθήματος.")
+            QMessageBox.information(
+                self,
+                "Χωρίς δεδομένα",
+                "Δεν υπάρχουν βαθμολογίες για τα quiz αυτού του μαθήματος.",
+            )
             self.canvas.draw()
             return
 
         x = list(range(len(labels)))
         self.ax.bar(x, averages, color="cornflowerblue")
         self.ax.set_xticks(x)
-        self.ax.set_xticklabels(labels, rotation=45, ha='right')
+        self.ax.set_xticklabels(labels, rotation=45, ha="right")
         self.ax.set_title("Μέσοι Όροι Βαθμολογιών ανά Quiz")
         self.ax.set_ylabel("Βαθμός (%)")
         self.ax.set_ylim(0, 100)

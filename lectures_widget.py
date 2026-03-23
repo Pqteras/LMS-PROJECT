@@ -1,6 +1,16 @@
-import os,subprocess
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox,QFileDialog, QListWidget
+import os
+import subprocess
+from PyQt5.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QPushButton,
+    QMessageBox,
+    QFileDialog,
+    QListWidget,
+)
 from PyQt5.QtCore import Qt
+
 
 class LecturesWidget(QWidget):
     def __init__(self, course_id, admin=False):
@@ -40,18 +50,22 @@ class LecturesWidget(QWidget):
     def view_lectures(self):
         selected = self.lectures_list.currentItem()
         if not selected:
-            QMessageBox.warning(self, "Προειδοποίηση", "Επίλεξε μια διάλεξη για προβολή.")
+            QMessageBox.warning(
+                self, "Προειδοποίηση", "Επίλεξε μια διάλεξη για προβολή."
+            )
             return
         folder_path = os.path.join("lectures", f"course_{self.course_id}")
         file_path = os.path.join(folder_path, selected.text())
         if os.path.exists(file_path):
             try:
-                if os.name == 'nt':
+                if os.name == "nt":
                     os.startfile(file_path)
-                elif os.name == 'posix':
+                elif os.name == "posix":
                     subprocess.run(["xdg-open", file_path])
             except Exception as e:
-                QMessageBox.critical(self, "Σφάλμα", f"Αδυναμία ανοίγματος αρχείου: {e}")
+                QMessageBox.critical(
+                    self, "Σφάλμα", f"Αδυναμία ανοίγματος αρχείου: {e}"
+                )
         else:
             QMessageBox.warning(self, "Σφάλμα", "Το αρχείο δεν βρέθηκε.")
 
@@ -66,7 +80,11 @@ class LecturesWidget(QWidget):
                 with open(file_path, "rb") as source_file:
                     with open(target_path, "wb") as target_file:
                         target_file.write(source_file.read())
-                QMessageBox.information(self, "Επιτυχία", "Η διάλεξη προστέθηκε με επιτυχία.")
+                QMessageBox.information(
+                    self, "Επιτυχία", "Η διάλεξη προστέθηκε με επιτυχία."
+                )
                 self.load_lectures()
             except Exception as e:
-                QMessageBox.warning(self, "Σφάλμα", f"Σφάλμα κατά την προσθήκη διάλεξης: {str(e)}")
+                QMessageBox.warning(
+                    self, "Σφάλμα", f"Σφάλμα κατά την προσθήκη διάλεξης: {str(e)}"
+                )
