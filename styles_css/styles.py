@@ -6,7 +6,7 @@ def get_main_window_style():
     """Επιστρέφει το γενικό στυλ για τα παράθυρα της εφαρμογής."""
     return """
         QWidget {
-            font-family: 'Segoe UI';
+            font-family: 'Manrope', 'Segoe UI', sans-serif;
             font-size: 18px;
         }
         QPushButton {
@@ -112,7 +112,7 @@ def subjects_list_style():
         font-weight: bold; 
         color: #0d47a1; 
         letter-spacing: 1px;
-        font-family: 'Segoe UI', sans-serif;
+        font-family: 'Manrope', 'Segoe UI', sans-serif;
         """
 
 
@@ -352,7 +352,7 @@ def sidebar_style():
             background-color: transparent;
             color: #ecf0f1;
             font-size: 14px;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Manrope', 'Segoe UI', sans-serif;
         }
 
         QPushButton:hover {
@@ -425,7 +425,7 @@ def available_courses_list_style():
         border: 2px solid #dcdde1;
         border-radius: 10px;
         padding: 10px;
-        font-family: 'Segoe UI', sans-serif;
+        font-family: 'Manrope', 'Segoe UI', sans-serif;
         font-size: 16px;
         color: #2f3640;
     }

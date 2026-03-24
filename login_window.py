@@ -56,7 +56,7 @@ class LoginWindow(QWidget):
         self.clear_login_frame()
 
         title = QLabel(f"Σύνδεση Xρήστη \n")
-        title.setFont(QFont("Arial", 14, QFont.Bold))
+        title.setFont(QFont("Manrope", 14, QFont.Bold))
         title.setStyleSheet(login_register_user_title_style())
         title.setAlignment(Qt.AlignCenter)
 
@@ -65,7 +65,7 @@ class LoginWindow(QWidget):
         )
         subtitle.setWordWrap(True)
         subtitle.setStyleSheet(login_register_user_title_style())
-        subtitle.setFont(QFont("Arial", 10))
+        subtitle.setFont(QFont("Manrope", 10))
         subtitle.setAlignment(Qt.AlignCenter)
 
         self.email_input = QLineEdit()

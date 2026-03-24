@@ -115,7 +115,7 @@ class MainWindow(QWidget):
         left_layout.addWidget(logo_label)
 
         left_label = QLabel("E-Learning\nΠλατφόρμα")
-        left_label.setFont(QFont("Segoe UI", 32, QFont.Bold))
+        left_label.setFont(QFont("Manrope", 32, QFont.Bold))
         left_label.setStyleSheet("color: white;")
         # Κεντράρει το κείμενο μέσα στο label (δηλαδή η λέξη "Πλατφόρμα" θα είναι ακριβώς κάτω από το κέντρο της λέξης "E-Learning").
         left_label.setAlignment(Qt.AlignCenter)
@@ -242,6 +242,7 @@ class MainWindow(QWidget):
 if __name__ == "__main__":
     initialize_database()  # Δημιουργεί πίνακες και φάκελο lectures
     app = QApplication(sys.argv)
+    app.setFont(QFont("Manrope", 10))
     win = MainWindow()  # Η επιλογή ρόλου γίνεται μέσα στο MainWindow
     win.showMaximized()
     sys.exit(app.exec_())

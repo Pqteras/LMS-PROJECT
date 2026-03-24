@@ -95,7 +95,7 @@ class RegisterWindow(QWidget):
         self.host.clear_login_frame()
 
         title = QLabel(f"Εγγραφή Χρήστη \n")
-        title.setFont(QFont("Segoe UI", 15, QFont.Bold))
+        title.setFont(QFont("Manrope", 15, QFont.Bold))
         title.setAlignment(Qt.AlignCenter)
         # Το margin δημιουργεί κενό έξω από το στοιχείο, ενώ το padding δημιουργεί κενό μέσα στο στοιχείο, μεγαλώνοντας ουσιαστικά το μέγεθος του "κουτιού" του τίτλου
         title.setStyleSheet(login_register_user_title_style())
